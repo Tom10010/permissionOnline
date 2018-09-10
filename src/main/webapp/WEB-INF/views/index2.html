@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<head>
+    <#assign base=basePath.contextPath />
+    <base id="base" href="${base}">
+    <meta name="charset" content="utf-8">
+    <meta name="viewport"
+          content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>
+        任务
+    </title>
+    <link rel="stylesheet" href="${base}/plugins/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="${base}/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="${base}/plugins/font-awesome/css/font-awesome.min.css">
+    <link href="${base}/css/wx/page.css" rel="stylesheet">
+    <link href="${base}/css/wx/mask.css" rel="stylesheet">
+    <style>
+        ul {
+            list-style: none;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #ffffff;
+        }
+
+        .content {
+            background: white;
+            padding: 10px;
+        }
+
+        .content .content-list {
+            overflow: hidden;
+            border-bottom: 1px solid #eee;
+            padding: 5px;
+        }
+
+        .content .content-list img {
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+
+        .content-list p div {
+            margin-top: 3px;
+        }
+        input {
+            border: 0px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .form-control {
+            display: block;
+            width: 60%;
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+            -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+            -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container-fluid" style="margin-top: 18px;">
+    <button id="totalPage" class="btn btn-default" value=""
+            style="display: none">
+        总页数 <span class="badge"></span>
+    </button>
+
+    <button id="currentPage" class="btn btn-default" value=""
+            style="display: none">
+        当前页数 <span class="badge"></span>
+    </button>
+
+    <div id="wrapper" style="display: block;margin-top:30px;margin-bottom:50px;">
+        <div id="scroller">
+            <div id="pullDown" style="display: none;">
+                <span class="pullDownIcon"></span><span class="pullDownLabel"></span>
+            </div>
+            <div class="content">
+                <div class="content-list" id="zw_list">
+                </div>
+            </div>
+            <div id="pullUp" style="display: none;">
+                <span class="pullUpIcon"></span><span class="pullUpLabel"></span>
+            </div>
+        </div>
+    </div>
+    <input type="text" value="${(token.userId)+'_'+(token.token)}" id="authorization" hidden="hidden">
+    <input type="text" class="" name="worker_id" id="worker_id" placeholder="worker_id" value="${user.worker_id}"
+           hidden="hidden">
+</div>
+<!-- jQuery 2.1.4 -->
+<script src="${base}/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+<!-- REQUIRED JS SCRIPTS -->
+<script type="text/javascript" src="${base}/js/iscroll4.js"></script>
+<script src="${base}/plugins/bootstrap/js/bootstrap.js"></script>
+<script src="${base}/js/template-web.js"></script>
+<script id="zw_list_data" type="text/html">
+    {{each list as value i}}
+    <div onclick="" style="border-top:4px solid #ebebf5;">
+        <div class="">
+                <div class="dropdown">
+                    <div id="dropdownMenu4" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-tasks fa-x pull-right" style="color: #01AAED" aria-hidden="true">编辑</i>
+                        <span class="pull-right" id="search-sorttype" ></span>
+                   <!--     <span  style="color: #01AAED" class="pull-right">任务提交</span>-->
+                    </div>
+                    <ul class="dropdown-menu list-group" role="menu" aria-labelledby="dropdownMenu2">
+                        <!--<li  class="dropdown-header"></li>-->
+                        <li class="list-group-item"  onclick="edit(2,{{value.taskid}})">
+                            <span>处理中</span>
+                        </li>
+                        <li class="list-group-item" onclick="edit(3,{{value.taskid}})">
+                            <span >已处理</span>
+                        </li>
+                    </ul>
+            </div>
+            <div class="">
+           <p>{{value.publishcontent}}</p></div>
+           <div class=""><i class="fa fa-user  fa-x" aria-hidden="true"
+                                                          style="color:orangered"></i>&nbsp;{{value.realname}}</span></div></div>
+         <div class="pull-right">    <span class="" style="color: #01bd8b">
+                    {{if value.status==0}}
+                     未完成
+                    {{else if value.status==1}}
+                    已完成
+                    {{else if value.status==2}}
+                    处理中
+                    {{else if value.status==3}}
+                    已处理
+                    {{/if}}
+                </span></div></div>
+                <div class="">
+
+                <span class="">
+                           <!-- {{value.AddTime|dateFormat 'yyyy年 MM月 dd日 hh:mm:ss'}}-->
+                             {{  $imports.dateFormat(value.publishtime,'yyyy年 MM月 dd日')}}
+                </span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {{/each}}
+</script>
+<script type="text/javascript">
+    function sou_click(postData) {
+        var mask = $('<div class="mask"></div>');
+        $('body').append(mask);
+        var url = '${shzqoa_url}/worker/getTask1.do'
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: postData,
+            error: function () {
+                $('body .mask').remove();
+                alert("服务开小差了")
+            },
+            success: function (data) {
+             // alert(  JSON.stringify(data))
+                $('body .mask').remove();
+                if (data.status == 0) {
+                    if (data.data.list == null
+                        || data.data.list == "") {
+                        $('#zw_list').html('<div class="col-sm-12 alert alert-info">没有数据</div>');
+                    } else {
+                        $('#totalPage').val(data.data.tatalpage);
+                        $('#currentPage').val(data.data.currpage);
+                        template.defaults.imports.dateFormat = function (date, format) {
+                            date = new Date(date);
+                            var map = {
+                                "M": date.getMonth() + 1, //月份
+                                "d": date.getDate(), //日
+                                "h": date.getHours(), //小时
+                                "m": date.getMinutes(), //分
+                                "s": date.getSeconds(), //秒
+                                "q": Math.floor((date.getMonth() + 3) / 3), //季度
+                                "S": date.getMilliseconds() //毫秒
+                            };
+                            format = format.replace(/([yMdhmsqS])+/g, function (all, t) {
+                                var v = map[t];
+                                if (v !== undefined) {
+                                    if (all.length > 1) {
+                                        v = '0' + v;
+                                        v = v.substr(v.length - 2);
+                                    }
+                                    return v;
+                                } else if (t === 'y') {
+                                    return (date.getFullYear() + '').substr(4 - all.length);
+                                }
+                                return all;
+                            });
+                            return format;
+                        }
+                        /*    template.helper("xx",dateFormat());*/
+                        var html = template('zw_list_data', data.data);
+                        $('#zw_list').append(html)
+                        //  document.getElementById('zw_list').innerHTML = html;
+                    }
+                } else {
+                    $('#zw_list').html('<span class="alert">没有数据</span>');
+                }
+            }
+        });
+    }
+
+    //下拉分页
+    //上拉刷新当前数据
+    function pullUpAction() {
+        var worker_id = $('#worker_id').val();
+        var currentPage = $('#currentPage').val();
+        var totalPage = $('#totalPage').val();;
+        currentPage = Number(currentPage)
+        totalPage = Number(totalPage)
+        //alert("总页数"+totalPage+"当前页"+currentPage)
+
+        if (currentPage + 1 <= totalPage) {
+            var postData = {
+                "pageSize": 6,
+                "page": currentPage + 1,
+                "workId": worker_id
+            };
+            sou_click(postData);
+            myScroll.refresh();
+        } else {
+            return;
+
+        }
+    }
+
+    document.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+    }, false);
+    document.addEventListener('DOMContentLoaded', loaded, false);
+
+    function loaded() {
+        pullDownEl = document.getElementById('pullDown');
+        pullDownOffset = pullDownEl.offsetHeight;
+        pullUpEl = document.getElementById('pullUp');
+        pullUpOffset = pullUpEl.offsetHeight;
+        /**
+         * 初始化iScroll控件
+         */
+        myScroll = new iScroll('wrapper', {
+            //y:-1000,
+            checkDOMChanges: true,
+            vScroll: true,
+            vScrollbar: false,
+            /*fadeScrollbar:false, */
+            topOffset: pullUpOffset,
+            onRefresh: function () {
+                if (pullUpEl.className.match('loading')) {
+                    pullUpEl.className = '';
+                    //pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉加载更多...';
+                }
+            },
+            onScrollMove: function () {
+                if (this.y < (this.maxScrollY - 5)
+                    && !pullUpEl.className.match('flip')) {
+                    $('#pullUp').show();
+                    pullUpEl.className = 'flip';
+                    //pullUpEl.querySelector('.pullUpLabel').innerHTML = '松手开始更新...';
+                }
+            },
+            onScrollEnd: function () {
+                if (pullUpEl.className.match('flip')) {
+                    pullUpEl.className = 'loading';
+                    //pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';
+                    pullUpAction();
+                }
+            }
+        });
+    }
+function edit(type,taskId){
+
+    var postData = {
+        "status": type,
+        "taskId": taskId
+    };
+    var url = '${shzqoa_url}/worker/updateTask.do'
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: postData,
+        error: function () {
+            $('body .mask').remove();
+            alert("服务开小差了")
+        },
+        success: function (data) {
+            $('body .mask').remove();
+            if (data.status == 0) {
+                alert("更新成功");
+            }
+            else{
+                alert("更新失败");
+            }
+        }
+})}
+    $(function () {
+        var authorization = $('#authorization').val();
+        var worker_id = $('#worker_id').val();
+        var postData = {
+            "pageSize": 6,
+            "page": 1,
+            "workId": worker_id
+        };
+        if (worker_id != null && worker_id != '') {
+            sou_click(postData)
+        }
+    });
+</script>
+</body>
+</html>

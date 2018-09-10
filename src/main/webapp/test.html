@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+      <title>Hello CORS</title>
+    <!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
+     
+      <script>
+    $(document).ready(function() {
+        $.ajax({
+            url: "http://localhost:8081/perint/toCheckApply.do",
+            method: "POST",
+            contentType: "application/json; charset=utf-8"
+        }).then(function(data, status, jqxhr) {
+            alert(data)
+        });
+    });
+</script>
+</head>
+<body>
+</body>
+</html>
